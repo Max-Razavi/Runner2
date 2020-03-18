@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class PlayerMov : MonoBehaviour
 {
+
     [SerializeField] private LayerMask m_WhatIsGround;							// A mask determining what is ground to the character
     [SerializeField] private Transform m_GroundCheck;							// A position marking where to check if the player is grounded.
 
@@ -15,11 +17,12 @@ public class PlayerMov : MonoBehaviour
 
     public float moveSpeed = 30f;
     public float jumpForce = 3000f;
+
     public SpriteRenderer spriteRenderer;
     private Rigidbody2D rigidbody;
-
     public Animator animator;
 
+    
     bool jump = false;
     bool down = false;
     bool ground = false;
@@ -44,17 +47,16 @@ public class PlayerMov : MonoBehaviour
 
     private void checkInput()
     {
-        
+        //move character
         var movement = new Vector3(Input.GetAxisRaw("Horizontal"),0);
         transform.position += movement * moveSpeed * Time.deltaTime;
-
-
+          
         if (!jump || m_Grounded)
         {
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                animator.SetBool("isRunning", true);
-                spriteRenderer.flipX = false;
+                animator.SetBool("isRunning", true);           //change animation
+                spriteRenderer.flipX = false;                  //flip character
             }
             else if (Input.GetKeyUp(KeyCode.RightArrow))
             {
@@ -73,13 +75,11 @@ public class PlayerMov : MonoBehaviour
             }
         }
         
-
        if (Input.GetButtonDown("Jump"))
         {
             jump = true;
             down = true;
             animator.SetBool("isJumping", true);
-                       
         }
 
        //for reset game
@@ -92,22 +92,14 @@ public class PlayerMov : MonoBehaviour
 
     void FixedUpdate()
     {
-        //rigidbody.velocity = new Vector2(5f, rigidbody.velocity.y);
-
+        
         if(jump && ground)
         {
             
-            rigidbody.AddForce(new Vector2(500, Mathf.Abs(jumpForce)));
+            rigidbody.AddForce(new Vector2(0, Mathf.Abs(jumpForce)));
             jump = false;
             ground = false;
-        }
-
-        if (down)
-        {
-            rigidbody.AddForce(new Vector2(0, -500f));
-            down = false;
-        }
-
+        }        
 
         bool wasGrounded = m_Grounded;
         m_Grounded = false;
@@ -122,11 +114,9 @@ public class PlayerMov : MonoBehaviour
                 m_Grounded = true;
                 if (!wasGrounded)
                 {
-                    animator.SetBool("isJumping", false);
-                    //animator.SetBool("isRunning", false);
+                    animator.SetBool("isJumping", false);                    ;
                 }
-                    
-                
+                 
             }
         }
 
