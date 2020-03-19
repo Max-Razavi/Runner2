@@ -7,12 +7,16 @@ using UnityEngine;
 public class PlayerMov : MonoBehaviour
 {
 
-    [SerializeField] private LayerMask m_WhatIsGround;							// A mask determining what is ground to the character
-    [SerializeField] private Transform m_GroundCheck;							// A position marking where to check if the player is grounded.
+    [SerializeField] private LayerMask m_WhatIsGround;	// A mask determining what is ground to the character
+    [SerializeField] private Transform m_GroundCheck;	// A position marking where to check if the player is grounded.
+    private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
+    //[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
+
 
     private bool m_Grounded;            // Whether or not the player is grounded.
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
-
+    private bool m_FacingRight = true;  // For determining which way the player is currently facing.
+    private Vector3 m_Velocity = Vector3.zero;
 
 
     public float moveSpeed = 30f;
@@ -22,9 +26,9 @@ public class PlayerMov : MonoBehaviour
     private Rigidbody2D rigidbody;
     public Animator animator;
 
-    
+    float horizontalMove = 0f;
+
     bool jump = false;
-    bool down = false;
     bool ground = false;
     
         
@@ -47,65 +51,46 @@ public class PlayerMov : MonoBehaviour
 
     private void checkInput()
     {
-        //move character
-        var movement = new Vector3(Input.GetAxisRaw("Horizontal"),0);
-        transform.position += movement * moveSpeed * Time.deltaTime;
-          
-        if (!jump || m_Grounded)
+
+        horizontalMove = Input.GetAxisRaw("Horizontal") * moveSpeed ;
+
+        Vector3 targetVelocity = new Vector2(horizontalMove , rigidbody.velocity.y);
+        transform.position += targetVelocity * Time.deltaTime;
+
+        animator.SetFloat("speed", Mathf.Abs(horizontalMove));
+
+        var Grounded = rigidbody.velocity.y == 0f;
+
+        // If the input is moving the player right and the player is facing left...
+        if (horizontalMove > 0 && !m_FacingRight)
         {
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                animator.SetBool("isRunning", true);           //change animation
-                spriteRenderer.flipX = false;                  //flip character
-            }
-            else if (Input.GetKeyUp(KeyCode.RightArrow))
-            {
-                animator.SetBool("isRunning", false);
-            }
-
-
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                animator.SetBool("isRunning", true);
-                spriteRenderer.flipX = true;
-            }
-            else if (Input.GetKeyUp(KeyCode.LeftArrow))
-            {
-                animator.SetBool("isRunning", false);
-            }
+            // ... flip the player.
+            Flip();
         }
-        
-       if (Input.GetButtonDown("Jump"))
+        // Otherwise if the input is moving the player left and the player is facing right...
+        else if (horizontalMove < 0 && m_FacingRight)
         {
-            jump = true;
-            down = true;
-            animator.SetBool("isJumping", true);
+            // ... flip the player.
+            Flip();
         }
 
-       //for reset game
-       if(this.transform.position.y <= -30)
+        if (Grounded && !jump)
         {
-            Application.LoadLevel(0);
-        }
-              
-    }
-
-    void FixedUpdate()
-    {
-        
-        if(jump && ground)
-        {
+ 
+            if (Input.GetButtonDown("Jump"))
+            {
+                jump = true;
+                rigidbody.AddForce(new Vector2(0, jumpForce));
+                animator.SetBool("isJumping", true);
+            }
             
-            rigidbody.AddForce(new Vector2(0, Mathf.Abs(jumpForce)));
-            jump = false;
-            ground = false;
-        }        
+        }
 
         bool wasGrounded = m_Grounded;
         m_Grounded = false;
 
-        // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
-        // This can be done using layers instead but Sample Assets will not overwrite your project settings.
+        //The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
+        //This can be done using layers instead but Sample Assets will not overwrite your project settings.
         Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -114,24 +99,30 @@ public class PlayerMov : MonoBehaviour
                 m_Grounded = true;
                 if (!wasGrounded)
                 {
-                    animator.SetBool("isJumping", false);                    ;
+                    animator.SetBool("isJumping", false);
+                    jump = false;
                 }
-                 
+
             }
         }
 
 
-
+        //for reseting game
+        if (this.transform.position.y <= -70)
+        {
+            Application.LoadLevel(0);
+        }
+              
     }
-
-    void OnCollisionEnter2D(Collision2D collision2D)
+    private void Flip()
     {
-        
-            ground = true;
-            //animator.speed = 1;
-      
+        // Switch the way the player is labelled as facing.
+        m_FacingRight = !m_FacingRight;
+
+        // Multiply the player's x local scale by -1.
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
     }
-    
-
-
+ 
 }
