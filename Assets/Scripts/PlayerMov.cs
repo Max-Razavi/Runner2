@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityStandardAssets.CrossPlatformInput;
 
 public class PlayerMov : MonoBehaviour
 {
@@ -17,6 +17,11 @@ public class PlayerMov : MonoBehaviour
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
     private bool m_FacingRight = true;  // For determining which way the player is currently facing.
     private Vector3 m_Velocity = Vector3.zero;
+
+
+    public Joystick joystick;
+    protected Joystick joystiick;
+    protected joyStick joybutton;
 
 
     public float moveSpeed = 30f;
@@ -40,6 +45,9 @@ public class PlayerMov : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        joystiick = FindObjectOfType<Joystick>();
+        joybutton = FindObjectOfType<joyStick>();
+
         rigidbody = GetComponent<Rigidbody2D>();
     }
 
@@ -51,8 +59,32 @@ public class PlayerMov : MonoBehaviour
 
     private void checkInput()
     {
+        //move with button
+        horizontalMove = CrossPlatformInputManager.GetAxisRaw("Horizontal");
 
-        horizontalMove = Input.GetAxisRaw("Horizontal") * moveSpeed ;
+        ////if (CrossPlatformInputManager.GetButtonDown("Jump"))
+        ////{
+        ////    if (rigidbody.velocity.y == 0)
+        ////        rigidbody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Force);
+        ////}
+
+        rigidbody.velocity = new Vector2(horizontalMove * moveSpeed, rigidbody.velocity.y);
+
+
+
+        //move with joyStick
+        //if (joystiick.Horizontal >= .2f)
+        //{
+        //    horizontalMove = moveSpeed;
+        //}else if(joystiick.Horizontal <= -.2f)
+        //{
+        //    horizontalMove = -moveSpeed;
+        //}
+        //else
+        //{
+        //    horizontalMove = 0f;
+        //}
+        
 
         Vector3 targetVelocity = new Vector2(horizontalMove , rigidbody.velocity.y);
         transform.position += targetVelocity * Time.deltaTime;
@@ -77,7 +109,7 @@ public class PlayerMov : MonoBehaviour
         if (Grounded && !jump)
         {
  
-            if (Input.GetButtonDown("Jump"))
+            if (CrossPlatformInputManager.GetButtonDown("Jump"))
             {
                 jump = true;
                 rigidbody.AddForce(new Vector2(0, jumpForce));
