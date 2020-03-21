@@ -19,22 +19,22 @@ public class PlayerMov : MonoBehaviour
     private Vector3 m_Velocity = Vector3.zero;
 
 
-    public Joystick joystick;
-    protected Joystick joystiick;
-    protected joyStick joybutton;
+    //public Joystick joystick;
+    //protected Joystick joystiick;
+    //protected joyStick joybutton;
 
 
     public float moveSpeed = 30f;
     public float jumpForce = 3000f;
 
-    public SpriteRenderer spriteRenderer;
+    //public SpriteRenderer spriteRenderer;
     private Rigidbody2D rigidbody;
     public Animator animator;
 
     float horizontalMove = 0f;
 
     bool jump = false;
-    bool ground = false;
+    //bool ground = false;
     
         
     void Awake()
@@ -45,8 +45,8 @@ public class PlayerMov : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        joystiick = FindObjectOfType<Joystick>();
-        joybutton = FindObjectOfType<joyStick>();
+        //joystiick = FindObjectOfType<Joystick>();
+        //joybutton = FindObjectOfType<joyStick>();
 
         rigidbody = GetComponent<Rigidbody2D>();
     }
