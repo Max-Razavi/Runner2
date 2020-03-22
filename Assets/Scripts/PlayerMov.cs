@@ -7,35 +7,29 @@ using UnityStandardAssets.CrossPlatformInput;
 public class PlayerMov : MonoBehaviour
 {
 
-    [SerializeField] private LayerMask m_WhatIsGround;	// A mask determining what is ground to the character
-    [SerializeField] private Transform m_GroundCheck;	// A position marking where to check if the player is grounded.
-    private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
-    //[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
+    [SerializeField] private LayerMask WhatIsGround;	// A mask determining what is ground to the character
+    [SerializeField] private Transform GroundCheck;	// A position marking where to check if the player is grounded.
+    const float GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
+    
 
 
     private bool m_Grounded;            // Whether or not the player is grounded.
-    const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
     private bool m_FacingRight = true;  // For determining which way the player is currently facing.
     private Vector3 m_Velocity = Vector3.zero;
 
 
-    //public Joystick joystick;
-    //protected Joystick joystiick;
-    //protected joyStick joybutton;
-
+  
 
     public float moveSpeed = 30f;
     public float jumpForce = 3000f;
 
-    //public SpriteRenderer spriteRenderer;
     private Rigidbody2D rigidbody;
     public Animator animator;
 
     float horizontalMove = 0f;
 
     bool jump = false;
-    //bool ground = false;
-    
+       
         
     void Awake()
     {
@@ -45,9 +39,6 @@ public class PlayerMov : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //joystiick = FindObjectOfType<Joystick>();
-        //joybutton = FindObjectOfType<joyStick>();
-
         rigidbody = GetComponent<Rigidbody2D>();
     }
 
@@ -61,30 +52,8 @@ public class PlayerMov : MonoBehaviour
     {
         //move with button
         horizontalMove = CrossPlatformInputManager.GetAxisRaw("Horizontal");
-
-        ////if (CrossPlatformInputManager.GetButtonDown("Jump"))
-        ////{
-        ////    if (rigidbody.velocity.y == 0)
-        ////        rigidbody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Force);
-        ////}
-
+               
         rigidbody.velocity = new Vector2(horizontalMove * moveSpeed, rigidbody.velocity.y);
-
-
-
-        //move with joyStick
-        //if (joystiick.Horizontal >= .2f)
-        //{
-        //    horizontalMove = moveSpeed;
-        //}else if(joystiick.Horizontal <= -.2f)
-        //{
-        //    horizontalMove = -moveSpeed;
-        //}
-        //else
-        //{
-        //    horizontalMove = 0f;
-        //}
-        
 
         Vector3 targetVelocity = new Vector2(horizontalMove , rigidbody.velocity.y);
         transform.position += targetVelocity * Time.deltaTime;
@@ -107,8 +76,7 @@ public class PlayerMov : MonoBehaviour
         }
 
         if (Grounded && !jump)
-        {
- 
+        { 
             if (CrossPlatformInputManager.GetButtonDown("Jump"))
             {
                 jump = true;
@@ -117,13 +85,13 @@ public class PlayerMov : MonoBehaviour
             }
             
         }
-
+        
         bool wasGrounded = m_Grounded;
         m_Grounded = false;
 
         //The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
         //This can be done using layers instead but Sample Assets will not overwrite your project settings.
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(GroundCheck.position, GroundedRadius, WhatIsGround);
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
@@ -158,3 +126,31 @@ public class PlayerMov : MonoBehaviour
     }
  
 }
+//private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
+//[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
+
+//public Joystick joystick;
+//protected Joystick joystiick;
+//protected joyStick joybutton;
+
+//joystiick = FindObjectOfType<Joystick>();
+//joybutton = FindObjectOfType<joyStick>();
+
+
+//move with joyStick
+//if (joystiick.Horizontal >= .2f)
+//{
+//    horizontalMove = moveSpeed;
+//}else if(joystiick.Horizontal <= -.2f)
+//{
+//    horizontalMove = -moveSpeed;
+//}
+//else
+//{
+//    horizontalMove = 0f;
+//}
+////if (CrossPlatformInputManager.GetButtonDown("Jump"))
+////{
+////    if (rigidbody.velocity.y == 0)
+////        rigidbody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Force);
+////}
