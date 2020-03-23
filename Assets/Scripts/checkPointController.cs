@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coin : MonoBehaviour
+public class checkPointController : MonoBehaviour
 {
-    private LevelManager _levelManager;
-    public int coinValue;
+
+    private SpriteRenderer changeSpriteRendere;
+    public Sprite blackFlag,greenFlag;    
+    public bool checkPointReached;
+
+
 
     // Start is called before the first frame update
     void Start()
     {
-        _levelManager = FindObjectOfType<LevelManager>();
+        changeSpriteRendere = GetComponent<SpriteRenderer>();
+        
     }
 
     // Update is called once per frame
@@ -22,9 +27,13 @@ public class Coin : MonoBehaviour
     {
         if(collision.tag == "player")
         {
-            _levelManager.AddCoins(coinValue);
-            Destroy(gameObject);
+            changeSpriteRendere.sprite = greenFlag;
+            checkPointReached = true;
         }
         
     }
+
+    
+
+
 }

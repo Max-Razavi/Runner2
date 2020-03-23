@@ -17,8 +17,8 @@ public class PlayerMov : MonoBehaviour
     private bool m_FacingRight = true;  // For determining which way the player is currently facing.
     private Vector3 m_Velocity = Vector3.zero;
 
-
-  
+    
+    public LevelManager _levelManager;
 
     public float moveSpeed = 30f;
     public float jumpForce = 3000f;
@@ -29,6 +29,11 @@ public class PlayerMov : MonoBehaviour
     float horizontalMove = 0f;
 
     bool jump = false;
+    
+
+    public Vector3 respawnPoint;
+    
+     
        
         
     void Awake()
@@ -40,6 +45,10 @@ public class PlayerMov : MonoBehaviour
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
+        respawnPoint = transform.position;
+        _levelManager = FindObjectOfType<LevelManager>();
+        
+
     }
 
     // Update is called once per frame
@@ -124,7 +133,25 @@ public class PlayerMov : MonoBehaviour
         theScale.x *= -1;
         transform.localScale = theScale;
     }
- 
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+       
+        
+        if (collision.tag == "fallDetector")
+        {
+            //transform.position = respawnPoint;
+            _levelManager.Respawn();
+            
+
+        }
+        if(collision.tag == "checkPoint")
+        {
+             respawnPoint = collision.transform.position;
+            
+        }
+    }
+
 }
 //private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
 //[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;	// How much to smooth out the movement

@@ -31,4 +31,5 @@ public class CameraControl : MonoBehaviour
         //smoothing  camera moving
         transform.position = Vector3.Lerp(transform.position, playerPosition, offsetSmoothing * Time.deltaTime);
     }
+    
 }
