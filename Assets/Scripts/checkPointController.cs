@@ -25,7 +25,7 @@ public class checkPointController : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "player")
+        if(collision.tag == "myPlayer")
         {
             changeSpriteRendere.sprite = greenFlag;
             checkPointReached = true;

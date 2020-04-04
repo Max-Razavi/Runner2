@@ -6,8 +6,9 @@ TagManager:
   tags:
   - Ground
   - fallDetector
-  - player
   - checkPoint
+  - fallingObstecle
+  - myPlayer
   layers:
   - Default
   - TransparentFX

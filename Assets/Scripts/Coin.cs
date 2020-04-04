@@ -22,7 +22,7 @@ public class Coin : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "player")
+        if(collision.tag == "myPlayer")
         {
             _levelManager.AddCoins(coinValue);
             //this.GetComponent<AudioSource>().Play();
